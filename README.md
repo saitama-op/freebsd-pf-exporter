@@ -13,6 +13,6 @@ A lightweight Prometheus exporter written in Go for OPNsense and FreeBSD systems
 Compile the static binary for FreeBSD natively (no CGO required):
 
 ```bash
-git clone [https://github.com/saitama-op/freebsd-pf-exporter.git](https://github.com/saitama-op/freebsd-pf-exporter.git)
+git clone https://github.com/saitama-op/freebsd-pf-exporter.git
 cd freebsd-pf-exporter
 make clean && make
