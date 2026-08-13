@@ -30,6 +30,8 @@ var (
 	dnsEnabled       = flag.Bool("collector.dns", true, "Enable the unbound DNS collector")
 	dhcpEnabled      = flag.Bool("collector.dhcp", true, "Enable the DHCP lease collector")
 	geoIpEnabled    = flag.Bool("collector.geoip",true,"Enable the Geo IP location for PublicIps")
+	serviceEnabled = flag.Bool("collector.service", true, "Enable the FreeBSD service status collector")
+	serviceList    = flag.String("collector.service.services", "unbound,wireguard,dpinger,suricata,kea-dhcp4", "Comma-separated list of services to monitor")
 )
 
 func main() {
@@ -72,6 +74,10 @@ func main() {
 	if *geoIpEnabled{
 		registry.MustRegister(collector.NewPFGeoCollector("/usr/local/share/GeoIP/GeoLite2-City.mmdb",*scrapeTimeout))
 		log.Println("Collector enabled: geo ip")
+	}
+	if *serviceEnabled {
+		registry.MustRegister(collector.NewServiceCollector(*serviceList, *scrapeTimeout))
+		log.Printf("Collector enabled: service (monitoring: %s)", *serviceList)
 	}
 
 	// Handlers
