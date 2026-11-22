@@ -69,6 +69,8 @@ freebsd-pf-exporter/
 | `opnsense_interface_rx_errors` | Counter | `interface` | Inbound network error count |
 | `opnsense_interface_tx_errors` | Counter | `interface` | Outbound network error count |
 | `opnsense_interface_drops` | Counter | `interface` | Dropped packet count |
+| `opnsense_interface_link_up` | Gauge | `interface` | Link state (`1` = active, `0` = inactive) |
+| `opnsense_interface_link_speed_mbps` | Gauge | `interface` | Reported link speed in Mbps; `0` if unavailable or inactive |
 
 ### 3. Service Status (`-collector.service`)
 
@@ -97,6 +99,47 @@ freebsd-pf-exporter/
 | `opnsense_mbuf_used` | Gauge | None | Number of networking memory buffers (mbufs) currently in use |
 | `opnsense_temperature` | Gauge | `core` | CPU core temperature in Celsius |
 | `opnsense_uptime` | Gauge | None | System uptime in seconds |
+
+### 7. WireGuard Peers (`-collector.wireguard`)
+
+| Metric Name | Type | Labels | Description |
+| --- | --- | --- | --- |
+| `opnsense_wireguard_peer_latest_handshake_timestamp_seconds` | Gauge | `interface`, `peer` | Unix timestamp of the peer's latest successful handshake; `0` if it has never connected |
+| `opnsense_wireguard_peer_receive_bytes_total` | Counter | `interface`, `peer` | Total bytes received from the peer |
+| `opnsense_wireguard_peer_transmit_bytes_total` | Counter | `interface`, `peer` | Total bytes transmitted to the peer |
+
+The collector reads `wg show all dump`. The `peer` label is the peer's public key; endpoint addresses are not exported.
+
+### 8. Unbound DNS (`-collector.dns`)
+
+| Metric Name | Type | Description |
+| --- | --- | --- |
+| `opnsense_dns_queries_total` | Counter | Total DNS queries processed |
+| `opnsense_dns_cache_hits_total` | Counter | Total cache hits |
+| `opnsense_dns_cache_misses_total` | Counter | Total cache misses |
+| `opnsense_dns_prefetches_total` | Counter | Total cache prefetches |
+| `opnsense_dns_expired_answers_total` | Counter | Total expired cache entries served |
+| `opnsense_dns_recursive_replies_total` | Counter | Total recursive replies |
+| `opnsense_dns_requestlist_avg` | Gauge | Average outstanding recursive requests |
+| `opnsense_dns_requestlist_max` | Gauge | Maximum outstanding recursive requests |
+| `opnsense_dns_requestlist_overwritten_total` | Counter | Request-list entries overwritten |
+| `opnsense_dns_requestlist_exceeded_total` | Counter | Requests that exceeded the request-list limit |
+| `opnsense_dns_message_cache_entries` | Gauge | Current message-cache entries |
+| `opnsense_dns_rrset_cache_entries` | Gauge | Current RRset-cache entries |
+| `opnsense_dns_infrastructure_cache_entries` | Gauge | Current infrastructure-cache entries |
+| `opnsense_dns_key_cache_entries` | Gauge | Current key-cache entries |
+
+Unbound versions may omit some statistics; only metrics present in `unbound-control stats_noreset` output are emitted.
+
+### 9. DHCP Pool Utilization (`-collector.dhcp`)
+
+| Metric Name | Type | Labels | Description |
+| --- | --- | --- | --- |
+| `opnsense_dhcp_pool_capacity_addresses` | Gauge | `interface`, `pool` | Number of IPv4 addresses configured in the pool |
+| `opnsense_dhcp_pool_used_addresses` | Gauge | `interface`, `pool` | Number of active dynamic leases whose IP addresses fall within the pool |
+| `opnsense_dhcp_pool_utilization_ratio` | Gauge | `interface`, `pool` | Used addresses divided by pool capacity, from `0` to `1` |
+
+Pool metrics support legacy DHCP `<range>` entries and Kea IPv4 pools in `/conf/config.xml`. Usage is based on active lease entries that include a recognizable IPv4 address; pools with no matching active leases report zero used. These metrics do not include static reservations unless they also appear in the active lease list.
 
 ---
 
@@ -199,6 +242,8 @@ Usage of freebsd-pf-exporter:
     	Comma-separated list of services to monitor (default "unbound,wireguard,dpinger,suricata,kea-dhcp4")
   -collector.system
     	Enable the sysctl system collector (default true)
+  -collector.wireguard
+      Enable the WireGuard peer collector (default true)
   -scrape.timeout duration
     	Timeout for scraping individual system commands (default 5s)
   -web.listen-address string
@@ -259,4 +304,3 @@ label_replace(
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-

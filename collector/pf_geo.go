@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"os/exec"
 	"regexp"
 	"strings"
 	"time"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/oschwald/geoip2-golang"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/saitama-op/freebsd-pf-exporter/internal"
 )
 
 type PFGeoCollector struct {
@@ -49,7 +49,7 @@ func (c *PFGeoCollector) Collect(ch chan<- prometheus.Metric) {
 	// 1. Get active firewall states natively from pf
 	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
 	defer cancel()
-	out, err := exec.Command("pfctl", "-ss").Output()
+	out, err := internal.RunCommand(ctx, "pfctl", "-ss")
 	if err != nil {
 		log.Printf("Error running pfctl: %v", err)
 		return
