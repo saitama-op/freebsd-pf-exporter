@@ -20,29 +20,33 @@ This exporter captures firewall, gateway, memory buffer, service status, and net
 
 ```text
 freebsd-pf-exporter/
+├── .gitignore
+├── LICENSE
+├── Makefile
+├── README.md
 ├── cmd/
 │   └── exporter/
 │       └── main.go
 ├── collector/
 │   ├── dhcp.go
+│   ├── dhcp_test.go
 │   ├── dns.go
+│   ├── dns_test.go
 │   ├── gateway.go
 │   ├── interface.go
+│   ├── interface_test.go
 │   ├── mbuf.go
 │   ├── pf.go
 │   ├── pf_geo.go
 │   ├── service.go
-│   └── system.go
+│   ├── system.go
+│   ├── wireguard.go
+│   └── wireguard_test.go
 ├── internal/
-│   ├── exec.go
-│   ├── parser.go
-│   └── util.go
-├── rc.d/
-│   └── freebsd_pf_exporter
-├── Makefile
+│   └── exec.go
+├── freebsd-pf-exporter
 ├── go.mod
-├── go.sum
-└── README.md
+└── go.sum
 ```
 
 ---
