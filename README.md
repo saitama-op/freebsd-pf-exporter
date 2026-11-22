@@ -42,6 +42,8 @@ freebsd-pf-exporter/
 │   ├── system.go
 │   ├── wireguard.go
 │   └── wireguard_test.go
+├── grafana/
+│   └── opnsense-exporter-dashboard.json
 ├── internal/
 │   └── exec.go
 ├── freebsd-pf-exporter
@@ -274,6 +276,8 @@ scrape_configs:
 ---
 
 ## Grafana Panel Setup Examples
+
+An importable dashboard with interface link, DHCP pool, WireGuard, and expanded Unbound panels is available at [grafana/opnsense-exporter-dashboard.json](./grafana/opnsense-exporter-dashboard.json). In Grafana, use **Dashboards → New → Import** and upload this JSON file.
 
 ### 1. Renaming Network Interfaces & Filtering Virtual Interfaces
 
